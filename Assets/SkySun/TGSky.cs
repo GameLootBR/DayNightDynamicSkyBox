@@ -21,26 +21,31 @@ public class TGSky : MonoBehaviour
     public float dayMinutesDuration = 10;
     public bool animate;
 
+#if UNITY_EDITOR
     [Header("------ Colors")]
-    public Color nightColor;
-    public Color dayColor;
-    public Color dawnColor;
+    [SerializeField] private Color nightColor;
+    [SerializeField] private Color dayColor;
+    [SerializeField] private Color dawnColor;
+#endif
     public Gradient gradientColor;
 
     [Header("------ State")]
     public bool isNight;
     public float intensity;
 
-    Color lightColor;
-    float lastNightDuration = -1;
-    float lastHour = -1;
-    float lastLongitude = 1000;
-    int probeRenderID = -1;
-    float gray;
-    float hourEval;
-    Transform mainCamera;
-    float t = 0;
-    float dt = 0;
+    private Color lightColor;
+    private float lastHour = -1;
+    private float lastLongitude = 1000;
+    private int probeRenderID = -1;
+    private float gray;
+    private float hourEval;
+    private Transform mainCamera;
+    private float t = 0;
+    private float dt = 0;
+
+#if UNITY_EDITOR
+    private float lastNightDuration = -1;
+#endif
 
     //--------------------------------------------------------------------------
     void Start()
@@ -58,8 +63,10 @@ public class TGSky : MonoBehaviour
         RenderSettings.defaultReflectionResolution = probe.resolution;
         RenderSettings.defaultReflectionMode = UnityEngine.Rendering.DefaultReflectionMode.Custom;
         RenderSettings.customReflection = new Cubemap(probe.resolution, TextureFormat.RGBA32, true);
-        lastNightDuration = -1;
         probeRenderID = probe.RenderProbe();
+#if UNITY_EDITOR
+        lastNightDuration = -1;
+#endif
     }
 
     //--------------------------------------------------------------------------
@@ -70,16 +77,16 @@ public class TGSky : MonoBehaviour
         {
             return;
         }
-#endif
-        lastHour = hour;
-        lastLongitude = longitude;
-        dt = Time.deltaTime;
 
         if (lastNightDuration != nightDuration)
         {
             lastNightDuration = nightDuration;
             UpdateGradients();
         }
+#endif
+        lastHour = hour;
+        lastLongitude = longitude;
+        dt = Time.deltaTime;
 
         if (animate && Application.isPlaying)
         {
@@ -132,6 +139,7 @@ public class TGSky : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
     //--------------------------------------------------------------------------
     public void UpdateGradients()
     {
@@ -180,4 +188,5 @@ public class TGSky : MonoBehaviour
             AnimationUtility.SetKeyRightTangentMode(lightAngleCurve, i, AnimationUtility.TangentMode.Linear);
         }
     }
+#endif
 }
